@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, render_template
-from geojson import Point, Feature
+from geojson import FeatureCollection, Feature, Point
 
 from flaskr.collection import BordeauxCollection
 
@@ -10,17 +10,26 @@ MAPBOX_ACCESS_KEY = app.config.get('MAPBOX_ACCESS_TOKEN')
 
 
 def create_bike_park_locations(bike_parks_json):
+
     bike_park_locations = []
     for feature in bike_parks_json:
         # Create a geojson object for park location
-        lon = float(feature.get('x_long'))
-        lat = float(feature.get('y_lat'))
+        hoop_long = float(feature.get('x_long'))
+        hoop_lat = float(feature.get('y_lat'))
+        hoop_nature = feature.get('nature')
+        hoop_number = feature.get('nombre')
+        hoop_type = feature.get('domanialite')
+        hoop_owner = feature.get('proprietaire')
 
-        point = Point([lon, lat])
+        point = Point([hoop_long, hoop_lat])
 
-        marker_title = '<strong>{nature}</strong>'.format(**feature)
-        if feature.get('nombre'):
-            marker_title += '<p>(#{nombre})</p>'.format(**feature)
+        marker_title = '<strong>{}</strong>'.format(hoop_nature)
+        if hoop_number:
+            marker_title += '<p>(#{})</p>'.format(hoop_number)
+        if hoop_type:
+            marker_title += '<p>{}</p>'.format(hoop_type)
+        if hoop_owner:
+            marker_title += '<p><i>{}</i></p>'.format(hoop_owner)
 
         properties = {
             'title': marker_title,
@@ -31,7 +40,7 @@ def create_bike_park_locations(bike_parks_json):
 
         bike_park_locations.append(feature)
 
-    return bike_park_locations
+    return FeatureCollection(features=bike_park_locations)
 
 
 @app.route('/api/geojson')

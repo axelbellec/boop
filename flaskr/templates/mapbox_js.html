@@ -55,7 +55,7 @@
                     "type": "geojson",
                     "data": {
                         "type": "FeatureCollection",
-                        "features": {{ mapbox_park_locations | safe }}
+                        "features": {{ mapbox_park_locations.features | safe }}
                     }
                 },
             "layout": {
