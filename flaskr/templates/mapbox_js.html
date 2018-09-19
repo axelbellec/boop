@@ -17,16 +17,23 @@
             bottom: 0;
             width: 100%;
         }
-    </style>
-</head>
 
-<body>
-    <style>
+        .marker {
+            display: block;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+        }
+
         .mapboxgl-popup {
             max-width: 400px;
             font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
         }
     </style>
+</head>
+
+<body>
 
     <div id="map"></div>
     <script>
@@ -46,20 +53,18 @@
             },
             trackUserLocation: true
         }));
-        map.on('load', function () {
 
+        map.on('load', function () {
             map.addLayer({
                 "id": "points",
                 "type": "symbol",
                 "source": {
                     "type": "geojson",
-                    "data": {
-                        "type": "FeatureCollection",
-                        "features": {{ mapbox_park_locations.features | safe }}
-                    }
+                    "data": {{ mapbox_park_locations | safe }}                    
                 },
             "layout": {
-                "icon-image": "{icon}-15"
+                "icon-image": "{icon}-15",
+                "icon-allow-overlap": false
             }
             });
         });
