@@ -3,7 +3,7 @@ import os
 
 import requests
 
-from flaskr.constants import BDX_BIKE_PARKS_JSON_URL, BDX_BIKE_PARKS_FILEPATH
+from app.constants import BDX_BIKE_PARKS_JSON_URL, BDX_BIKE_PARKS_FILEPATH
 
 
 class BordeauxCollection(object):

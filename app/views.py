@@ -1,10 +1,8 @@
-from flask import Flask, jsonify, render_template
+from flask import jsonify, render_template
 from geojson import FeatureCollection, Feature, Point
 
-from flaskr.collection import BordeauxCollection
-
-app = Flask(__name__)
-app.config.from_object('config')
+from app import app
+from app.collection import BordeauxCollection
 
 MAPBOX_ACCESS_KEY = app.config.get('MAPBOX_ACCESS_TOKEN')
 
