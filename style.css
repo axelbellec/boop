@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+h1 {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 1.5em;
+    padding: 10px;
+}
+
+#map {
+    flex-grow: 1;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.2em;
+    }
+}
+
+/* Adjust Mapbox controls for better mobile visibility */
+.mapboxgl-ctrl-top-right {
+    top: 50px !important;
+}
+
+.mapboxgl-popup-content {
+    font-size: 14px;
+}
+
+@media (max-width: 400px) {
+    .mapboxgl-popup-content {
+        font-size: 12px;
+    }
+}
