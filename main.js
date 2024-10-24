@@ -8,15 +8,6 @@ const map = new mapboxgl.Map({
   zoom: 13,
 });
 
-// Function to determine marker color based on typologie
-function getMarkerColor(typologie) {
-  const colorMap = {
-    ARCEAU_MOTO: "#ff0000",
-    ARCEAU_VELO: "#0000ff",
-    ARCEAU_VELO_CARGO: "#00ff00",
-  };
-  return colorMap[typologie] || "#808080";
-}
 
 // Function to get typology text
 function getTypologyText(typologie) {
@@ -40,7 +31,7 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
         type: "geojson",
         data: data,
         cluster: true,
-        clusterMaxZoom: 14,
+        clusterMaxZoom: 16,
         clusterRadius: 50,
       });
 
@@ -94,6 +85,33 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
           "circle-stroke-width": 1,
           "circle-stroke-color": "#fff",
         },
+      });
+
+      // Add click event for clusters
+      map.on('click', 'clusters', (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+        const clusterId = features[0].properties.cluster_id;
+        map.getSource('racks').getClusterExpansionZoom(
+          clusterId,
+          (err, zoom) => {
+            if (err) return;
+
+            map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom: zoom
+            });
+          }
+        );
+      });
+
+      // Change cursor to pointer when hovering over clusters
+      map.on('mouseenter', 'clusters', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+
+      // Change cursor back when not hovering over clusters
+      map.on('mouseleave', 'clusters', () => {
+        map.getCanvas().style.cursor = '';
       });
     });
 
