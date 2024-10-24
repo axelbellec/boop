@@ -1,5 +1,4 @@
 import { json } from '@sveltejs/kit';
-import fetch from 'node-fetch';
 
 const racksUrl = 'https://opendata.bordeaux-metropole.fr/api/explore/v2.1/catalog/datasets/st_arceau_p/exports/geojson?lang=fr&timezone=Europe%2FBerlin';
 

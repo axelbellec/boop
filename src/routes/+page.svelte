@@ -1,6 +1,7 @@
 <script lang="ts">
     import mapboxgl from "mapbox-gl";
     import { onMount } from "svelte";
+    import type { MapMouseEvent, EventData } from 'mapbox-gl';
 
     let map: mapboxgl.Map;
     let dataPromise: Promise<GeoJSONData>;
@@ -17,17 +18,19 @@
       // Initialize map controls here
       initializeMapControls();
 
-      // Fetch data from the API route
-      dataPromise = fetch('/api/racks')
-        .then((response) => response.json())
-        .then((data: GeoJSONData) => {
-          // Use the modular function to map the properties
-          data.features = data.features.map(mapFeatureProperties);
-          return data;
-        });
-
-      // Handle the data once it's loaded
-      dataPromise.then(handleLoadedData).catch((error) => console.error("Error loading GeoJSON data:", error));
+      // Wait for both map to load and data to be fetched
+      Promise.all([
+        new Promise((resolve) => map.on('load', resolve)),
+        fetch('/api/racks')
+          .then((response) => response.json())
+          .then((data: GeoJSONData) => {
+            // Use the modular function to map the properties
+            data.features = data.features.map(mapFeatureProperties);
+            return data;
+          })
+      ]).then(([_, data]) => {
+        handleLoadedData(data);
+      }).catch((error) => console.error("Error loading map or GeoJSON data:", error));
     });
 
     function initializeMapControls() {
@@ -51,12 +54,10 @@
     }
 
     function handleLoadedData(data: GeoJSONData) {
-      console.log({data})
-      map.on("load", () => {
-        addMapLayers(data);
-        // Add event listeners for map interactions
-        addMapEventListeners();
-      });
+      console.log("Data loaded");
+      addMapLayers(data);
+      // Add event listeners for map interactions
+      addMapEventListeners();
     }
 
     function addMapEventListeners() {
@@ -150,7 +151,7 @@
     }
 
     // Function to handle cluster click
-    function handleClusterClick(e: mapboxgl.MapMouseEvent & mapboxgl.EventData) {
+    function handleClusterClick(e: MapMouseEvent & EventData) {
       const features = map.queryRenderedFeatures(e.point, {
         layers: ["clusters"],
       }) as mapboxgl.GeoJSONFeature[];
@@ -172,7 +173,7 @@
 
     // Function to handle unclustered point interaction
     function handleUnclusteredPointInteraction(
-      e: mapboxgl.MapMouseEvent & mapboxgl.EventData,
+      e: MapMouseEvent & EventData,
       popup: mapboxgl.Popup
     ) {
       const coordinates = e.features?.[0].geometry?.coordinates.slice() as [
@@ -194,7 +195,7 @@
     function addMapLayers(data: GeoJSONData) {
       map.addSource("racks", {
         type: "geojson",
-        data: data,
+        data: data as unknown as GeoJSON,
         cluster: true,
         clusterMaxZoom: 16,
         clusterRadius: 50,
