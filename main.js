@@ -1,4 +1,5 @@
-mapboxgl.accessToken = "pk.eyJ1IjoiYmVsbGVjb29vIiwiYSI6ImNtMm5nODgyczA2b2cyaXNja2lvemZrYjUifQ.EaLPV2FXjpbys9194nYW4Q";
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiYmVsbGVjb29vIiwiYSI6ImNtMm5nODgyczA2b2cyaXNja2lvemZrYjUifQ.EaLPV2FXjpbys9194nYW4Q";
 
 // Initialize the map centered on Bordeaux
 const map = new mapboxgl.Map({
@@ -24,10 +25,118 @@ function mapFeatureProperties(feature) {
     ...feature,
     properties: {
       ...rest,
-      rackTypology: typologie,
+      rackTypology: getTypologyText(typologie),
       rackCount: nombre,
     },
   };
+}
+
+// Function to create a popup description
+function createPopupDescription(rackTypology, rackCount) {
+  return `
+    <strong>Rack Type</strong><br> 
+    ${rackTypology}<br><br>
+    <strong>Racks Available</strong><br>
+    ${rackCount || "N/A"}
+  `;
+}
+
+// Function to handle cluster click
+function handleClusterClick(e) {
+  const features = map.queryRenderedFeatures(e.point, {
+    layers: ["clusters"],
+  });
+  const clusterId = features[0].properties.cluster_id;
+  map.getSource("racks").getClusterExpansionZoom(clusterId, (err, zoom) => {
+    if (err) return;
+
+    map.easeTo({
+      center: features[0].geometry.coordinates,
+      zoom: zoom,
+    });
+  });
+}
+
+// Function to handle unclustered point interaction
+function handleUnclusteredPointInteraction(e, popup) {
+  const coordinates = e.features[0].geometry.coordinates.slice();
+  const { rackTypology, rackCount } = e.features[0].properties;
+
+  const description = createPopupDescription(rackTypology, rackCount);
+
+  while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+  }
+
+  popup.setLngLat(coordinates).setHTML(description).addTo(map);
+}
+
+// Function to add map layers
+function addMapLayers(data) {
+  map.addSource("racks", {
+    type: "geojson",
+    data: data,
+    cluster: true,
+    clusterMaxZoom: 16,
+    clusterRadius: 50,
+  });
+
+  map.addLayer({
+    id: "clusters",
+    type: "circle",
+    source: "racks",
+    filter: ["has", "point_count"],
+    paint: {
+      "circle-color": [
+        "step",
+        ["get", "point_count"],
+        "#993D51",
+        100,
+        "#732232",
+        750,
+        "#4A0E18",
+      ],
+      "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+    },
+  });
+
+  map.addLayer({
+    id: "cluster-count",
+    type: "symbol",
+    source: "racks",
+    filter: ["has", "point_count"],
+    layout: {
+      "text-field": "{point_count_abbreviated}",
+      "text-font": ["Rubik Medium", "Arial Unicode MS Bold"],
+      "text-size": 12,
+    },
+    paint: {
+      "text-color": "#FAF7F5", // Set text color to white
+    },
+  });
+
+  map.addLayer({
+    id: "unclustered-point",
+    type: "circle",
+    source: "racks",
+    filter: ["!", ["has", "point_count"]],
+    paint: {
+      "circle-color": [
+        "match",
+        ["get", "rackTypology"],
+        "Motorbike",
+        "#FFC4DB",
+        "Bike",
+        "#993D51",
+        "Bike + Cargo",
+        "#BF6076",
+        /* other */ "#ccc",
+      ],
+      "circle-radius": 7,
+      "circle-stroke-width": 2,
+      "circle-stroke-color": "#fff",
+    },
+  });
 }
 
 // Load GeoJSON data
@@ -40,84 +149,12 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
     map.on("style.load", () => {
       map.setConfigProperty("lightPreset", "dusk");
     });
+
     map.on("load", () => {
-      map.addSource("racks", {
-        type: "geojson",
-        data: data,
-        cluster: true,
-        clusterMaxZoom: 16,
-        clusterRadius: 50,
-      });
-
-      map.addLayer({
-        id: "clusters",
-        type: "circle",
-        source: "racks",
-        filter: ["has", "point_count"],
-        paint: {
-          "circle-color": [
-            "step",
-            ["get", "point_count"],
-            "#51bbd6",
-            100,
-            "#f1f075",
-            750,
-            "#f28cb1",
-          ],
-          "circle-radius": [
-            "step",
-            ["get", "point_count"],
-            20,
-            100,
-            30,
-            750,
-            40,
-          ],
-        },
-      });
-
-      map.addLayer({
-        id: "cluster-count",
-        type: "symbol",
-        source: "racks",
-        filter: ["has", "point_count"],
-        layout: {
-          "text-field": "{point_count_abbreviated}",
-          "text-font": ["Rubik Medium", "Arial Unicode MS Bold"],
-          "text-size": 12,
-        },
-      });
-
-      map.addLayer({
-        id: "unclustered-point",
-        type: "circle",
-        source: "racks",
-        filter: ["!", ["has", "point_count"]],
-        paint: {
-          "circle-color": ["get", "typologie"],
-          "circle-radius": 6,
-          "circle-stroke-width": 1,
-          "circle-stroke-color": "#fff",
-        },
-      });
+      addMapLayers(data);
 
       // Add click event for clusters
-      map.on("click", "clusters", (e) => {
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ["clusters"],
-        });
-        const clusterId = features[0].properties.cluster_id;
-        map
-          .getSource("racks")
-          .getClusterExpansionZoom(clusterId, (err, zoom) => {
-            if (err) return;
-
-            map.easeTo({
-              center: features[0].geometry.coordinates,
-              zoom: zoom,
-            });
-          });
-      });
+      map.on("click", "clusters", handleClusterClick);
 
       // Change cursor to pointer when hovering over clusters
       map.on("mouseenter", "clusters", () => {
@@ -138,22 +175,7 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
 
       map.on("mouseenter", "unclustered-point", (e) => {
         map.getCanvas().style.cursor = "pointer";
-
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const { rackTypology, rackCount } = e.features[0].properties; // Updated property names
-
-        const description = `
-                  <strong>Rack Type</strong><br> 
-                  ${getTypologyText(rackTypology)}<br><br>
-                  <strong>Racks Available</strong><br>
-                  ${rackCount || "N/A"}
-              `;
-
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-        }
-
-        popup.setLngLat(coordinates).setHTML(description).addTo(map);
+        handleUnclusteredPointInteraction(e, popup);
       });
 
       map.on("mouseleave", "unclustered-point", () => {
@@ -163,21 +185,7 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
 
       // Add touch event for mobile devices
       map.on("click", "unclustered-point", (e) => {
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const { rackTypology, rackCount } = e.features[0].properties; // Updated property names
-
-        const description = `
-                  <strong>Rack Type</strong><br> 
-                  ${getTypologyText(rackTypology)}<br><br>
-                  <strong>Racks Available</strong><br>
-                  ${rackCount || "N/A"}
-              `;
-
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-        }
-
-        popup.setLngLat(coordinates).setHTML(description).addTo(map);
+        handleUnclusteredPointInteraction(e, popup);
       });
     });
 
