@@ -1,11 +1,9 @@
-import fs from 'fs/promises';
-import path from 'path';
+import { json } from '@sveltejs/kit';
 import fetch from 'node-fetch';
 
-const racksFilePath = path.resolve('./src/routes/api/racks/racks.json');
 const racksUrl = 'https://opendata.bordeaux-metropole.fr/api/explore/v2.1/catalog/datasets/st_arceau_p/exports/geojson?lang=fr&timezone=Europe%2FBerlin';
 
-async function fetchAndCacheRacks() {
+async function fetchRacks() {
   const response = await fetch(racksUrl, {
     headers: {
       'Content-Type': 'application/json'
@@ -13,29 +11,16 @@ async function fetchAndCacheRacks() {
   });
   if (!response.ok) {
     console.error({response})
-    throw new Error('Failed to fetch racks data');
+    throw new Error('Failed to fetch racks data, response: ' + response.statusText);
   }
-  const data = await response.json();
-  await fs.writeFile(racksFilePath, JSON.stringify(data, null, 2));
-  return data;
+  return await response.json()
 }
 
 export async function GET(event) {
   try {
-    // Check if racks.json exists
-    await fs.access(racksFilePath);
-    // If it exists, read from the file
-    console.log('racks.json exists');
-    const racks = await fs.readFile(racksFilePath, 'utf-8');
-    return new Response(racks, { status: 200 });
+    const racks = await fetchRacks();
+    return json(racks)
   } catch (error) {
-    // If it doesn't exist, fetch and cache it
-    try {
-      console.log('racks.json does not exist, fetching and caching it');
-      const racks = await fetchAndCacheRacks();
-      return new Response(JSON.stringify(racks), { status: 200 });
-    } catch (fetchError) {
-      return new Response('Failed to fetch racks data', { status: 500 });
-    }
+    return new Response('Failed to fetch racks data, error: ' + error, { status: 500 });
   }
 }

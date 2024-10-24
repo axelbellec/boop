@@ -3,10 +3,10 @@
     import { onMount } from "svelte";
 
     let map: mapboxgl.Map;
+    let dataPromise: Promise<GeoJSONData>;
 
     onMount(() => {
       mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
-
 
       map = new mapboxgl.Map({
         container: "map", // container ID
@@ -14,88 +14,87 @@
         zoom: 13,
       });
 
+      // Initialize map controls here
+      initializeMapControls();
+
       // Fetch data from the API route
-      fetch('/api/racks')
+      dataPromise = fetch('/api/racks')
         .then((response) => response.json())
         .then((data: GeoJSONData) => {
           // Use the modular function to map the properties
           data.features = data.features.map(mapFeatureProperties);
+          return data;
+        });
 
-        //   map.on("style.load", () => {
-        //     map.setConfigProperty("mapbox", "darkPreset", "dusk");
-        //   });
-
-          map.on("load", () => {
-            addMapLayers(data);
-
-            // Add click event for clusters
-            map.on("click", "clusters", handleClusterClick);
-
-            // Change cursor to pointer when hovering over clusters@
-            map.on("mouseenter", "clusters", () => {
-              map.getCanvas().style.cursor = "pointer";
-            });
-
-            // Change cursor back when not hovering over clusters
-            map.on("mouseleave", "clusters", () => {
-              map.getCanvas().style.cursor = "";
-            });
-
-            // Create a popup, but don't add it to the map yet.
-            const popup = new mapboxgl.Popup({
-              closeButton: false,
-              closeOnClick: false,
-              maxWidth: "300px",
-            });
-
-            map.on("mouseenter", "unclustered-point", (e) => {
-              map.getCanvas().style.cursor = "pointer";
-              handleUnclusteredPointInteraction(e, popup);
-            });
-
-            map.on("mouseleave", "unclustered-point", () => {
-              map.getCanvas().style.cursor = "";
-              popup.remove();
-            });
-
-            // Add touch event for mobile devices
-            map.on("click", "unclustered-point", (e) => {
-              handleUnclusteredPointInteraction(e, popup);
-            });
-          });
-
-          // Add geolocate control
-          const geolocate = new mapboxgl.GeolocateControl({
-            positionOptions: {
-              enableHighAccuracy: true,
-            },
-            trackUserLocation: true,
-          });
-
-          map.addControl(geolocate);
-
-          // Add navigation control
-          const nav = new mapboxgl.NavigationControl();
-          map.addControl(nav, "top-right");
-
-          // Adjust map size on window resize
-          window.addEventListener("resize", () => {
-            map.resize();
-          });
-
-          document.getElementById("infoButton")?.addEventListener("click", () => {
-            const aboutSection = document.getElementById("aboutSection");
-            if (aboutSection?.classList.contains("hidden")) {
-              aboutSection.classList.remove("hidden");
-              aboutSection.style.display = "block";
-            } else {
-              aboutSection?.classList.add("hidden");
-              aboutSection.style.display = "none";
-            }
-          });
-        })
-        .catch((error) => console.error("Error loading GeoJSON data:", error));
+      // Handle the data once it's loaded
+      dataPromise.then(handleLoadedData).catch((error) => console.error("Error loading GeoJSON data:", error));
     });
+
+    function initializeMapControls() {
+      // Add geolocate control
+      const geolocate = new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+      });
+      map.addControl(geolocate);
+
+      // Add navigation control
+      const nav = new mapboxgl.NavigationControl();
+      map.addControl(nav, "top-right");
+
+      // Adjust map size on window resize
+      window.addEventListener("resize", () => {
+        map.resize();
+      });
+    }
+
+    function handleLoadedData(data: GeoJSONData) {
+      console.log({data})
+      map.on("load", () => {
+        addMapLayers(data);
+        // Add event listeners for map interactions
+        addMapEventListeners();
+      });
+    }
+
+    function addMapEventListeners() {
+      // Add click event for clusters
+      map.on("click", "clusters", handleClusterClick);
+
+      // Change cursor to pointer when hovering over clusters
+      map.on("mouseenter", "clusters", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+
+      // Change cursor back when not hovering over clusters
+      map.on("mouseleave", "clusters", () => {
+        map.getCanvas().style.cursor = "";
+      });
+
+      // Create a popup, but don't add it to the map yet.
+      const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        maxWidth: "300px",
+      });
+
+      map.on("mouseenter", "unclustered-point", (e) => {
+        map.getCanvas().style.cursor = "pointer";
+        handleUnclusteredPointInteraction(e, popup);
+      });
+
+      map.on("mouseleave", "unclustered-point", () => {
+        map.getCanvas().style.cursor = "";
+        popup.remove();
+      });
+
+      // Add touch event for mobile devices
+      map.on("click", "unclustered-point", (e) => {
+        handleUnclusteredPointInteraction(e, popup);
+      });
+    }
 
     // Define types for your data structures
     type FeatureProperties = {
