@@ -66,7 +66,7 @@ To set up the project locally:
 
 ## 🤝 Contributing
 
-We welcome contributions to Boop! Whether it's bug fixes, feature additions, or documentation improvements, feel free to open a pull request.
+Contributions to Boop are welcome! Whether it's bug fixes, feature additions, or documentation improvements, feel free to open a pull request.
 
 ## 📄 License
 
