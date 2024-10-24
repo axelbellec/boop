@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import fetch from 'node-fetch';
 
-const racksFilePath = path.resolve('./src/routes/api/racks/racks.json');
+const racksFilePath = path.join(process.cwd(), 'src', 'routes', 'api', 'racks', 'racks.json');
 const racksUrl = 'https://opendata.bordeaux-metropole.fr/api/explore/v2.1/catalog/datasets/st_arceau_p/exports/geojson?lang=fr&timezone=Europe%2FBerlin';
 
 async function fetchAndCacheRacks() {
