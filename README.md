@@ -6,6 +6,8 @@
 
 The primary goal of this project is to provide a convenient tool for cyclists in Bordeaux to locate available bike racks. By visualizing the data from the Bordeaux Metropole Open Data platform, users can easily find the nearest bike rack that suits their needs, whether for a standard bike, motorbike, or cargo bike. This project aims to promote cycling as a sustainable mode of transportation by making it easier to secure bikes in the city.
 
+You can view the live site at https://boop-bay.vercel.app/
+
 ### Accessing GeoJSON Data
 
 To access the GeoJSON data, use the following command:
