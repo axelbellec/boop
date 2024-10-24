@@ -8,6 +8,7 @@ const racksUrl = 'https://opendata.bordeaux-metropole.fr/api/explore/v2.1/catalo
 async function fetchAndCacheRacks() {
   const response = await fetch(racksUrl);
   if (!response.ok) {
+    console.error({response})
     throw new Error('Failed to fetch racks data');
   }
   const data = await response.json();
