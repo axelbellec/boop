@@ -1,10 +1,9 @@
 <script lang="ts">
     import mapboxgl from "mapbox-gl";
     import { onMount } from "svelte";
-    import type { MapMouseEvent, EventData } from 'mapbox-gl';
+    import type { MapMouseEvent } from 'mapbox-gl';
 
     let map: mapboxgl.Map;
-    let dataPromise: Promise<GeoJSONData>;
 
     onMount(() => {
       mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
