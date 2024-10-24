@@ -1,65 +1,83 @@
-# Boop
+# Boop: Bordeaux Bike Rack Finder
 
-**Boop** stands for **(B)ordeaux bike (hoop)s**, which refers to bike racks. This project aims to create a simple website that displays the Boops on a map using data from the Open Data API of Bordeaux Metropole.
+<img src="https://boop-bay.vercel.app/assets/images/twitter-preview.png" alt="Boop Twitter Preview" style="width: 20%;">
 
-# Purpose
+Boop (short for **B**ordeaux bike h**oop**s) is a sleek web application that helps cyclists in Bordeaux locate available bike racks. Leveraging the power of Mapbox GL and the Bordeaux Metropole Open Data API, Boop provides an interactive map interface to visualize various types of bike racks across the city.
 
-The primary goal of this project is to provide a convenient tool for cyclists in Bordeaux to locate available bike racks. By visualizing the data from the Bordeaux Metropole Open Data platform, users can easily find the nearest bike rack that suits their needs, whether for a standard bike, motorbike, or cargo bike. This project aims to promote cycling as a sustainable mode of transportation by making it easier to secure bikes in the city.
+## 🚀 Live Demo
 
-You can view the live site at https://boop-bay.vercel.app/
+Experience **Boop** in action: [https://boop-bay.vercel.app/](https://boop-bay.vercel.app/)
 
-### Accessing GeoJSON Data
+## 🎯 Purpose
 
-To access the GeoJSON data, use the following command:
+As cycling gains popularity in urban areas, finding secure parking spots for bikes becomes crucial. Boop addresses this need by offering:
 
-```bash
-curl -H "Content-Type: application/json" \
-    -X GET "https://opendata.bordeaux-metropole.fr/api/explore/v2.1/catalog/datasets/st_arceau_p/exports/geojson?lang=fr&timezone=Europe%2FBerlin" | jq > racks.son
-```
+- Up-to-date visualization of bike rack locations
+- Information on rack types (standard, cargo, or motorbike)
+- Number of available hoops at each location (capacity)
 
-### Types of Boops
+## 🛠 Tech Stack
 
-The data file contains three types of Boops, which are identified by the `.features[].properties.typologie` field:
+Boop is built with these technologies:
 
-- `ARCEAU_MOTO`: Motorbike racks
-- `ARCEAU_VELO`: Standard bicycle racks
-- `ARCEAU_VELO_CARGO`: Cargo bicycle racks
+- [SvelteKit](https://kit.svelte.dev/): for building a fast, efficient, and SEO-friendly web application
+- [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/): for rendering interactive maps (this library is awesome, check it out!)
+- [Vite](https://vitejs.dev/): as the build tool and development server 
+- [TypeScript](https://www.typescriptlang.org/): for type-safe JavaScript development
+- [Vercel](https://vercel.com/): for seamless deployment and hosting
 
-### Features
 
-For each rack, the website will display the number of hoops when clicked, which is specified in the `.features[].properties.nombre` field.
+## 🗺 Features
 
-## Creating a project
+- Interactive map interface
+- Cluster view for dense areas
+- Detailed information on click/tap
+- Responsive design for mobile and desktop
+- Geolocation support
+- Server-side caching for improved performance
 
-If you're seeing this, you've probably already done this step. Congrats!
+## 🚴‍♂️ Types of Bike Racks
 
-```bash
-# create a new project in the current directory
-npx sv create
+Boop visualizes three types of bike racks:
 
-# create a new project in my-app
-npx sv create my-app
-```
+- 🚲 Standard bicycle racks
+- 🚚 Cargo bicycle racks 
+- 🏍 Motorbike racks (there are only a few of them)
 
-## Developing
+> Each rack type is color-coded on the map for easy identification.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## 🛠 Development
 
-```bash
-npm run dev
+To set up the project locally:
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env` file with your Mapbox access token:
+   ```
+   VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ``
 
-## Building
+## 🤝 Contributing
 
-To create a production version of your app:
+We welcome contributions to Boop! Whether it's bug fixes, feature additions, or documentation improvements, feel free to open a pull request.
 
-```bash
-npm run build
-```
+## 📄 License
 
-You can preview the production build with `npm run preview`.
+Boop is open-source software licensed under the MIT license.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## 🙏 Acknowledgements
+
+- Bordeaux Metropole for providing the open data API
+- Mapbox for their excellent mapping platform
+- The Svelte and SvelteKit communities for their fantastic tools and support
+
+---
+
+Happy cycling, Bordeaux! 🚴‍♂️🇫🇷
