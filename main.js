@@ -1,13 +1,11 @@
 mapboxgl.accessToken = "pk.eyJ1IjoiYmVsbGVjb29vIiwiYSI6ImNtMm5nODgyczA2b2cyaXNja2lvemZrYjUifQ.EaLPV2FXjpbys9194nYW4Q";
 
-
 // Initialize the map centered on Bordeaux
 const map = new mapboxgl.Map({
   container: "map",
   center: [-0.5792, 44.8378],
   zoom: 13,
 });
-
 
 // Function to get typology text
 function getTypologyText(typologie) {
@@ -19,12 +17,28 @@ function getTypologyText(typologie) {
   return typologyMap[typologie] || "Unknown";
 }
 
+// Function to map feature properties to new names
+function mapFeatureProperties(feature) {
+  const { typologie, nombre, ...rest } = feature.properties;
+  return {
+    ...feature,
+    properties: {
+      ...rest,
+      rackTypology: typologie,
+      rackCount: nombre,
+    },
+  };
+}
+
 // Load GeoJSON data
 fetch("opendata-bordeaux-st_arceau_p.geojson")
   .then((response) => response.json())
   .then((data) => {
+    // Use the modular function to map the properties
+    data.features = data.features.map(mapFeatureProperties);
+
     map.on("style.load", () => {
-      map.setConfigProperty("basemap", "lightPreset", "dusk");
+      map.setConfigProperty("lightPreset", "dusk");
     });
     map.on("load", () => {
       map.addSource("racks", {
@@ -69,7 +83,7 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
         filter: ["has", "point_count"],
         layout: {
           "text-field": "{point_count_abbreviated}",
-          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+          "text-font": ["Rubik Medium", "Arial Unicode MS Bold"],
           "text-size": 12,
         },
       });
@@ -88,97 +102,102 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
       });
 
       // Add click event for clusters
-      map.on('click', 'clusters', (e) => {
-        const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+      map.on("click", "clusters", (e) => {
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: ["clusters"],
+        });
         const clusterId = features[0].properties.cluster_id;
-        map.getSource('racks').getClusterExpansionZoom(
-          clusterId,
-          (err, zoom) => {
+        map
+          .getSource("racks")
+          .getClusterExpansionZoom(clusterId, (err, zoom) => {
             if (err) return;
 
             map.easeTo({
               center: features[0].geometry.coordinates,
-              zoom: zoom
+              zoom: zoom,
             });
-          }
-        );
+          });
       });
 
       // Change cursor to pointer when hovering over clusters
-      map.on('mouseenter', 'clusters', () => {
-        map.getCanvas().style.cursor = 'pointer';
+      map.on("mouseenter", "clusters", () => {
+        map.getCanvas().style.cursor = "pointer";
       });
 
       // Change cursor back when not hovering over clusters
-      map.on('mouseleave', 'clusters', () => {
-        map.getCanvas().style.cursor = '';
+      map.on("mouseleave", "clusters", () => {
+        map.getCanvas().style.cursor = "";
+      });
+
+      // Create a popup, but don't add it to the map yet.
+      const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        maxWidth: "300px",
+      });
+
+      map.on("mouseenter", "unclustered-point", (e) => {
+        map.getCanvas().style.cursor = "pointer";
+
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const { rackTypology, rackCount } = e.features[0].properties; // Updated property names
+
+        const description = `
+                  <strong>Rack Type</strong><br> 
+                  ${getTypologyText(rackTypology)}<br><br>
+                  <strong>Racks Available</strong><br>
+                  ${rackCount || "N/A"}
+              `;
+
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        popup.setLngLat(coordinates).setHTML(description).addTo(map);
+      });
+
+      map.on("mouseleave", "unclustered-point", () => {
+        map.getCanvas().style.cursor = "";
+        popup.remove();
+      });
+
+      // Add touch event for mobile devices
+      map.on("click", "unclustered-point", (e) => {
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const { rackTypology, rackCount } = e.features[0].properties; // Updated property names
+
+        const description = `
+                  <strong>Rack Type</strong><br> 
+                  ${getTypologyText(rackTypology)}<br><br>
+                  <strong>Racks Available</strong><br>
+                  ${rackCount || "N/A"}
+              `;
+
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        popup.setLngLat(coordinates).setHTML(description).addTo(map);
       });
     });
 
-    // Create a popup, but don't add it to the map yet.
-    const popup = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false,
-      maxWidth: '300px'
+    // Add geolocate control
+    const geolocate = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
     });
 
-    map.on("mouseenter", "unclustered-point", (e) => {
-      map.getCanvas().style.cursor = "pointer";
+    map.addControl(geolocate);
 
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const { typologie: rackTypology, nombre: rackCount } = e.features[0].properties;
+    // Add navigation control
+    const nav = new mapboxgl.NavigationControl();
+    map.addControl(nav, "top-right");
 
-      const description = `
-                <strong>Rack Type:</strong> ${getTypologyText(rackTypology)}<br>
-                <strong>Racks Available:</strong> ${rackCount || "N/A"}
-            `;
-
-      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-      }
-
-      popup.setLngLat(coordinates).setHTML(description).addTo(map);
-    });
-
-    map.on("mouseleave", "unclustered-point", () => {
-      map.getCanvas().style.cursor = "";
-      popup.remove();
-    });
-
-    // Add touch event for mobile devices
-    map.on('click', 'unclustered-point', (e) => {
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const { typologie: rackTypology, nombre: rackCount } = e.features[0].properties;
-
-      const description = `
-                <strong>Rack Type:</strong> ${getTypologyText(rackTypology)}<br>
-                <strong>Racks Available:</strong> ${rackCount || "N/A"}
-            `;
-
-      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-      }
-
-      popup.setLngLat(coordinates).setHTML(description).addTo(map);
+    // Adjust map size on window resize
+    window.addEventListener("resize", () => {
+      map.resize();
     });
   })
   .catch((error) => console.error("Error loading GeoJSON data:", error));
-
-// Add geolocate control
-const geolocate = new mapboxgl.GeolocateControl({
-  positionOptions: {
-    enableHighAccuracy: true,
-  },
-  trackUserLocation: true,
-});
-
-map.addControl(geolocate);
-
-// Add navigation control
-const nav = new mapboxgl.NavigationControl();
-map.addControl(nav, 'top-right');
-
-// Adjust map size on window resize
-window.addEventListener('resize', () => {
-  map.resize();
-});
