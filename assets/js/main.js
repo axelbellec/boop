@@ -1,6 +1,7 @@
 mapboxgl.accessToken =
   "pk.eyJ1IjoiYmVsbGVjb29vIiwiYSI6ImNtMm5nODgyczA2b2cyaXNja2lvemZrYjUifQ.EaLPV2FXjpbys9194nYW4Q";
 
+
 // Initialize the map centered on Bordeaux
 const map = new mapboxgl.Map({
   container: "map",
@@ -140,7 +141,7 @@ function addMapLayers(data) {
 }
 
 // Load GeoJSON data
-fetch("opendata-bordeaux-st_arceau_p.geojson")
+fetch("data/opendata-bordeaux-st_arceau_p.geojson")
   .then((response) => response.json())
   .then((data) => {
     // Use the modular function to map the properties
@@ -206,6 +207,17 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
     // Adjust map size on window resize
     window.addEventListener("resize", () => {
       map.resize();
+    });
+
+    document.getElementById('infoButton').addEventListener('click', () => {
+        const aboutSection = document.getElementById('aboutSection');
+        if (aboutSection.classList.contains('hidden')) {
+            aboutSection.classList.remove('hidden');
+            aboutSection.style.display = 'block';
+        } else {
+            aboutSection.classList.add('hidden');
+            aboutSection.style.display = 'none';
+        }
     });
   })
   .catch((error) => console.error("Error loading GeoJSON data:", error));

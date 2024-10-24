@@ -3,17 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bordeaux Bike Racks</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Boop | Bordeaux Bike Hoops</title>
+    <link rel="stylesheet" href="assets/css/style.css">
     <!-- Mapbox GL JS CSS -->
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css' rel='stylesheet' />
+
+    <!-- Add favicon -->
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
 </head>
 <body>
-    <h1>Bordeaux Bike Racks Map</h1>
+    <h1>Bordeaux <span>🚲</span> Racks</h1>
     <div id="map"></div>
-
+    <button id="infoButton">ℹ️</button>
+    <div id="aboutSection" class="hidden">
+        <h3>About</h3>
+        <div>
+            <p>I needed a way to secure my bike, but I couldn't find any bike racks.</p>
+            <p>So, I built a website that maps out bike rack locations in Bordeaux.</p>
+            <p>It pulls data from the Bordeaux Metropole Open Data platform to show various rack types, including ones for motorbikes, standard bikes, and cargo bikes.</p>
+            <p>Click on a rack to see how many hoops are available.</p>
+        </div>
+    </div>
     <!-- Mapbox GL JS JavaScript -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js'></script>
-    <script src="main.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>
