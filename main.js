@@ -1,5 +1,5 @@
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiYmVsbGVjb29vIiwiYSI6ImNtMm5nODgyczA2b2cyaXNja2lvemZrYjUifQ.EaLPV2FXjpbys9194nYW4Q";
+mapboxgl.accessToken = "pk.eyJ1IjoiYmVsbGVjb29vIiwiYSI6ImNtMm5nODgyczA2b2cyaXNja2lvemZrYjUifQ.EaLPV2FXjpbys9194nYW4Q";
+
 
 // Initialize the map centered on Bordeaux
 const map = new mapboxgl.Map({
@@ -108,11 +108,11 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
       map.getCanvas().style.cursor = "pointer";
 
       const coordinates = e.features[0].geometry.coordinates.slice();
-      const { typologie, nombre } = e.features[0].properties;
+      const { typologie: rackTypology, nombre: rackCount } = e.features[0].properties;
 
       const description = `
-                <strong>Rack Type:</strong> ${getTypologyText(typologie)}<br>
-                <strong>Racks Available:</strong> ${nombre || "N/A"}
+                <strong>Rack Type:</strong> ${getTypologyText(rackTypology)}<br>
+                <strong>Racks Available:</strong> ${rackCount || "N/A"}
             `;
 
       while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -130,11 +130,11 @@ fetch("opendata-bordeaux-st_arceau_p.geojson")
     // Add touch event for mobile devices
     map.on('click', 'unclustered-point', (e) => {
       const coordinates = e.features[0].geometry.coordinates.slice();
-      const { typologie, nombre } = e.features[0].properties;
+      const { typologie: rackTypology, nombre: rackCount } = e.features[0].properties;
 
       const description = `
-                <strong>Rack Type:</strong> ${getTypologyText(typologie)}<br>
-                <strong>Racks Available:</strong> ${nombre || "N/A"}
+                <strong>Rack Type:</strong> ${getTypologyText(rackTypology)}<br>
+                <strong>Racks Available:</strong> ${rackCount || "N/A"}
             `;
 
       while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
