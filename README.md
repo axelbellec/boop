@@ -36,6 +36,14 @@ Boop is built with these technologies:
 - Geolocation support
 - Server-side caching for improved performance
 
+Here's what's planned for future development:
+
+- [ ] Add an "About" section to explain the project's approach and purpose in more detail
+- [ ] Fix styling glitches 
+- [ ] Implement a feature to highlight the closest bike racks to the user's location
+- [ ] Enhance the user interface for a more visually appealing experience
+
+
 ## 🚴‍♂️ Types of Bike Racks
 
 Boop visualizes three types of bike racks:
