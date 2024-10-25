@@ -42,6 +42,10 @@
   </ul>
 
   <p>We're constantly working to improve Boop and welcome feedback from our users. Happy cycling!</p>
+  
+  <a href="https://github.com/axelbellec/boop" target="_blank" rel="noopener noreferrer">
+    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" width="32" height="32" />
+  </a>
 </div>
 
 <style>
