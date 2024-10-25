@@ -100,18 +100,18 @@
       maxWidth: "300px",
     });
 
-    map.on("mouseenter", "unclustered-point", (e) => {
+    map.on("mouseenter", "unclustered-point-circle", (e) => {
       map.getCanvas().style.cursor = "pointer";
       handleUnclusteredPointInteraction(e, popup);
     });
 
-    map.on("mouseleave", "unclustered-point", () => {
+    map.on("mouseleave", "unclustered-point-circle", () => {
       map.getCanvas().style.cursor = "";
       popup.remove();
     });
 
     // Add touch event for mobile devices
-    map.on("click", "unclustered-point", (e) => {
+    map.on("click", "unclustered-point-circle", (e) => {
       handleUnclusteredPointInteraction(e, popup);
     });
   }
@@ -226,69 +226,91 @@
 
   // Function to add map layers
   function addMapLayers(data: GeoJSONData) {
-    map.addSource("racks", {
-      type: "geojson",
-      data: data as unknown as GeoJSON,
-      cluster: true,
-      clusterMaxZoom: 16,
-      clusterRadius: 50,
-    });
+    map.loadImage('/assets/images/bike.png', (error, image) => {
+      if (error) throw error;
+      
+      if (image) {
+        map.addImage('bike-icon', image);
 
-    map.addLayer({
-      id: "clusters",
-      type: "circle",
-      source: "racks",
-      filter: ["has", "point_count"],
-      paint: {
-        "circle-color": [
-          "step",
-          ["get", "point_count"],
-          "#993D51",
-          100,
-          "#732232",
-          750,
-          "#4A0E18",
-        ],
-        "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
-      },
-    });
+        map.addSource("racks", {
+          type: "geojson",
+          data: data as unknown as GeoJSON,
+          cluster: true,
+          clusterMaxZoom: 16,
+          clusterRadius: 50,
+        });
 
-    map.addLayer({
-      id: "cluster-count",
-      type: "symbol",
-      source: "racks",
-      filter: ["has", "point_count"],
-      layout: {
-        "text-field": "{point_count_abbreviated}",
-        "text-font": ["Rubik Medium", "Arial Unicode MS Bold"],
-        "text-size": 12,
-      },
-      paint: {
-        "text-color": "#FAF7F5", // Set text color to white
-      },
-    });
+        map.addLayer({
+          id: "clusters",
+          type: "circle",
+          source: "racks",
+          filter: ["has", "point_count"],
+          paint: {
+            "circle-color": [
+              "step",
+              ["get", "point_count"],
+              "#993D51",
+              100,
+              "#732232",
+              750,
+              "#4A0E18",
+            ],
+            "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+          },
+        });
 
-    map.addLayer({
-      id: "unclustered-point",
-      type: "circle",
-      source: "racks",
-      filter: ["!", ["has", "point_count"]],
-      paint: {
-        "circle-color": [
-          "match",
-          ["get", "rackTypology"],
-          "Motorbike",
-          "#FFC4DB",
-          "Bike",
-          "#993D51",
-          "Bike + Cargo",
-          "#BF6076",
-          /* other */ "#ccc",
-        ],
-        "circle-radius": 7,
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#fff",
-      },
+        map.addLayer({
+          id: "cluster-count",
+          type: "symbol",
+          source: "racks",
+          filter: ["has", "point_count"],
+          layout: {
+            "text-field": "{point_count_abbreviated}",
+            "text-font": ["Rubik Medium", "Arial Unicode MS Bold"],
+            "text-size": 12,
+          },
+          paint: {
+            "text-color": "#FAF7F5",
+          },
+        });
+
+        // Add a circle layer for unclustered points
+        map.addLayer({
+          id: "unclustered-point-circle",
+          type: "circle",
+          source: "racks",
+          filter: ["!", ["has", "point_count"]],
+          paint: {
+            "circle-color": [
+              "match",
+              ["get", "rackTypology"],
+              "Motorbike",
+              "#FFC4DB",
+              "Bike",
+              "#993D51",
+              "Bike + Cargo",
+              "#BF6076",
+              /* other */ "#ccc",
+            ],
+            "circle-radius": 14,
+            "circle-stroke-width": 2,
+            "circle-stroke-color": "#fff",
+          },
+        });
+
+        // Add a symbol layer for the bike icon
+        map.addLayer({
+          id: "unclustered-point-icon",
+          type: "symbol",
+          source: "racks",
+          filter: ["!", ["has", "point_count"]],
+          layout: {
+            "icon-image": "bike-icon",
+            "icon-size": 0.05, // Adjust this value to change the size of the icon
+            "icon-allow-overlap": true,
+          },
+        });
+      }
     });
   }
 
@@ -421,3 +443,4 @@
     font-weight: bold;
   }
 </style>
+
