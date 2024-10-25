@@ -49,7 +49,7 @@ export function mapPublicToiletProperties(feature: Feature): Feature {
   };
 }
 
-export function createPopupDescription(
+export function createRackPopupDescription(
   rackTypology: string,
   rackCount: number
 ): string {
@@ -58,5 +58,29 @@ export function createPopupDescription(
     ${rackTypology}<br><br>
     <strong>Racks Available</strong><br>
     ${rackCount || "N/A"}
+  `;
+}
+
+export function createFountainPopupDescription(properties: any): string {
+  return `
+    <strong>Fountain Name</strong><br>
+    ${properties.fountainName || "N/A"}<br><br>
+    <strong>Address</strong><br>
+    ${properties.fountainAddress || "N/A"}<br><br>
+    <strong>Winterization</strong><br>
+    ${properties.fountainInWinterization ? "Yes" : "No"}<br><br>
+    <strong>Last Control Date</strong><br>
+    ${properties.fountainLastControlDate || "N/A"}
+  `;
+}
+
+export function createPublicToiletPopupDescription(properties: any): string {
+  return `
+    <strong>Toilet Type</strong><br>
+    ${properties.toiletType || "N/A"}<br><br>
+    <strong>Address</strong><br>
+    ${properties.toiletAddress || "N/A"}<br><br>
+    <strong>Accessible for Disabled</strong><br>
+    ${properties.accessibleForDisabled ? "Yes" : "No"}
   `;
 }
