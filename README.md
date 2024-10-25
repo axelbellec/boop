@@ -45,7 +45,8 @@ Here's what's planned for future development:
 - [ ] Fix styling glitches 
 - [ ] Implement a feature to highlight the closest bike racks to the user's location
 - [ ] Enhance the user interface for a more visually appealing experience
-- [ ] Add dataset for [drinking fountains](https://opendata.bordeaux-metropole.fr/explore/dataset/fontaines_a_boire/information/?disjunctive.nom_commune)
+- [x] Add dataset for [drinking fountains](https://opendata.bordeaux-metropole.fr/explore/dataset/fontaines_a_boire/information/?disjunctive.nom_commune)
+- [x] Add dataset for [public toilets](https://opendata.bordeaux-metropole.fr/api/explore/v2.1/catalog/datasets/bor_sigsanitaire/exports/geojson?lang=fr&timezone=Europe%2FBerlin)
 - [ ] Add dataset for mandatory parking zones for [free-floating](https://opendata.bordeaux-metropole.fr/explore/dataset/st_freefloating_s/information/?disjunctive.nom_commune) vehicles
 
 
