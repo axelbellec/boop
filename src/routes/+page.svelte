@@ -157,7 +157,8 @@
   }
 
   function mapFountainProperties(feature: Feature): Feature {
-    const { nom_fontaine, adresse, hivernage, date_dernier_controle, ...rest } = feature.properties;
+    const { nom_fontaine, adresse, hivernage, date_dernier_controle, ...rest } =
+      feature.properties;
     return {
       ...feature,
       properties: {
@@ -226,11 +227,11 @@
 
   // Function to add map layers
   function addMapLayers(data: GeoJSONData) {
-    map.loadImage('/assets/images/bike.png', (error, image) => {
+    map.loadImage("/assets/images/bike.png", (error, image) => {
       if (error) throw error;
-      
+
       if (image) {
-        map.addImage('bike-icon', image);
+        map.addImage("bike-icon", image);
 
         map.addSource("racks", {
           type: "geojson",
@@ -255,7 +256,15 @@
               750,
               "#4A0E18",
             ],
-            "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+            "circle-radius": [
+              "step",
+              ["get", "point_count"],
+              20,
+              100,
+              30,
+              750,
+              40,
+            ],
           },
         });
 
@@ -274,7 +283,7 @@
           },
         });
 
-        // Add a circle layer for unclustered points
+        // Update the unclustered point circle layer
         map.addLayer({
           id: "unclustered-point-circle",
           type: "circle",
@@ -292,13 +301,23 @@
               "#BF6076",
               /* other */ "#ccc",
             ],
-            "circle-radius": 14,
+            "circle-radius": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              10,
+              5, // At zoom level 10, circle radius will be 5px
+              15,
+              10, // At zoom level 15, circle radius will be 10px
+              20,
+              20, // At zoom level 20, circle radius will be 20px
+            ],
             "circle-stroke-width": 2,
             "circle-stroke-color": "#fff",
           },
         });
 
-        // Add a symbol layer for the bike icon
+        // Update the unclustered point icon layer
         map.addLayer({
           id: "unclustered-point-icon",
           type: "symbol",
@@ -306,7 +325,17 @@
           filter: ["!", ["has", "point_count"]],
           layout: {
             "icon-image": "bike-icon",
-            "icon-size": 0.05, // Adjust this value to change the size of the icon
+            "icon-size": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              10,
+              0.03, // At zoom level 10, icon size will be 0.03
+              15,
+              0.05, // At zoom level 15, icon size will be 0.05
+              20,
+              0.08, // At zoom level 20, icon size will be 0.08
+            ],
             "icon-allow-overlap": true,
           },
         });
@@ -315,42 +344,62 @@
   }
 
   function addDrinkingFountainsLayer(data: GeoJSON.FeatureCollection) {
-    map.loadImage('/assets/images/drinking-fountain.png', (error, image) => {
+    map.loadImage("/assets/images/drinking-fountain.png", (error, image) => {
       if (error) throw error;
-      
+
       if (image) {
+        map.addImage("drinking-fountain", image);
+
         map.addSource("drinking-fountains", {
           type: "geojson",
           data: data,
         });
-        
-        map.addImage('drinking-fountain', image);
-        
-        // Add white circle layer
+
+        // Update the drinking fountains circle layer
         map.addLayer({
           id: "drinking-fountains-circle",
           type: "circle",
           source: "drinking-fountains",
           paint: {
-            "circle-radius": 14,
+            "circle-radius": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              10,
+              7, // At zoom level 10, circle radius will be 7px
+              15,
+              14, // At zoom level 15, circle radius will be 14px
+              20,
+              28, // At zoom level 20, circle radius will be 28px
+            ],
             "circle-color": "#BEE2FF",
             "circle-opacity": 0.9,
             "circle-stroke-width": 1,
             "circle-stroke-color": "#10244A",
             "circle-stroke-opacity": 0.8,
-          }
+          },
         });
 
-        // Add fountain icon layer
+        // Update the drinking fountains icon layer
         map.addLayer({
           id: "drinking-fountains-icon",
           type: "symbol",
           source: "drinking-fountains",
           layout: {
             "icon-image": "drinking-fountain",
-            "icon-size": 0.06, // Adjust this value to change the size of the icon
-            "icon-allow-overlap": true
-          }
+            "icon-size": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              10,
+              0.04, // At zoom level 10, icon size will be 0.04
+              15,
+              0.06, // At zoom level 15, icon size will be 0.06
+              20,
+              0.09, // At zoom level 20, icon size will be 0.09
+            ],
+            "icon-allow-overlap": true,
+          },
         });
 
         // Add popup for drinking fountains
@@ -360,14 +409,19 @@
         });
 
         // Update event listeners to work with both layers
-        ["drinking-fountains-circle", "drinking-fountains-icon"].forEach(layerId => {
-          map.on("mouseenter", layerId, (e) => {
-            if (e.features && e.features.length > 0) {
-              map.getCanvas().style.cursor = "pointer";
-              const coordinates = e.features[0].geometry.coordinates.slice() as [number, number];
-              const properties = e.features[0].properties;
+        ["drinking-fountains-circle", "drinking-fountains-icon"].forEach(
+          (layerId) => {
+            map.on("mouseenter", layerId, (e) => {
+              if (e.features && e.features.length > 0) {
+                map.getCanvas().style.cursor = "pointer";
+                const coordinates =
+                  e.features[0].geometry.coordinates.slice() as [
+                    number,
+                    number,
+                  ];
+                const properties = e.features[0].properties;
 
-              const description = `
+                const description = `
                 <strong>Drinking Fountain</strong><br>
                 ${properties?.fountainName || "Unnamed"}<br>
                 ${properties?.fountainAddress || "No address available"}<br><br>
@@ -375,15 +429,19 @@
                 ${properties?.fountainLastControlDate ? `Last control date: ${properties.fountainLastControlDate}` : ""}<br>
               `;
 
-              fountainPopup.setLngLat(coordinates).setHTML(description).addTo(map);
-            }
-          });
+                fountainPopup
+                  .setLngLat(coordinates)
+                  .setHTML(description)
+                  .addTo(map);
+              }
+            });
 
-          map.on("mouseleave", layerId, () => {
-            map.getCanvas().style.cursor = "";
-            fountainPopup.remove();
-          });
-        });
+            map.on("mouseleave", layerId, () => {
+              map.getCanvas().style.cursor = "";
+              fountainPopup.remove();
+            });
+          }
+        );
       }
     });
   }
@@ -443,4 +501,3 @@
     font-weight: bold;
   }
 </style>
-
