@@ -10,11 +10,14 @@ Experience **Boop** in action: [https://boop-bay.vercel.app/](https://boop-bay.v
 
 ## 🎯 Purpose
 
-As cycling gains popularity in urban areas, finding secure parking spots for bikes becomes crucial. Boop addresses this need by offering:
+As cycling gains popularity in urban areas, finding secure parking spots for bikes becomes crucial. While Bordeaux generally has an abundance of bike racks with one usually in sight, Boop provides a helpful tool for those times when you need specific information. 
 
+Boop addresses this need by offering:
 - Up-to-date visualization of bike rack locations
 - Information on rack types (standard, cargo, or motorbike)
 - Number of available hoops at each location (capacity)
+
+This app is particularly useful when you need to find a specific type of rack or want to plan ahead for areas you're less familiar with.
 
 ## 🛠 Tech Stack
 
