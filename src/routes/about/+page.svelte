@@ -66,7 +66,7 @@
     font-size: 1rem;
   }
 
-  h1, h2 {
+  h2 {
     color: #732232;
   }
 

@@ -317,12 +317,13 @@
   }
 
   .about-btn {
-    background-color: #732232;
-    color: white;
+    background-color: #FAF7F5;
+    color: #732232;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     cursor: pointer;
     font-size: 1rem;
+    font-weight: bold;
   }
 </style>
