@@ -2,15 +2,15 @@
   import mapboxgl from "mapbox-gl";
   import { onMount } from "svelte";
   import type { MapMouseEvent } from "mapbox-gl";
-  import 'mapbox-gl/dist/mapbox-gl.css';
-  import { browser } from '$app/environment';
-  import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
+  import "mapbox-gl/dist/mapbox-gl.css";
+  import { browser } from "$app/environment";
+  import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
 
   let map: mapboxgl.Map;
 
   function handleAboutClick() {
-    goto('/about');
+    goto("/about");
   }
 
   onMount(() => {
@@ -25,19 +25,24 @@
     // Initialize map controls here
     initializeMapControls();
 
-    // Wait for both map to load and data to be fetched
+    // Wait for map to load and data to be fetched
     Promise.all([
       new Promise((resolve) => map.on("load", resolve)),
       fetch("/api/racks")
         .then((response) => response.json())
         .then((data: GeoJSONData) => {
-          // Use the modular function to map the properties
           data.features = data.features.map(mapFeatureProperties);
           return data;
         }),
+      fetch("/api/drinking-fountains")
+        .then((response) => response.json())
+        .then((data: GeoJSON.FeatureCollection) => {
+          data.features = data.features.map(mapFountainProperties);
+          return data;
+        }),
     ])
-      .then(([_, data]) => {
-        handleLoadedData(data);
+      .then(([_, racksData, fountainsData]) => {
+        handleLoadedData(racksData, fountainsData);
       })
       .catch((error) =>
         console.error("Error loading map or GeoJSON data:", error)
@@ -64,10 +69,13 @@
     });
   }
 
-  function handleLoadedData(data: GeoJSONData) {
+  function handleLoadedData(
+    racksData: GeoJSONData,
+    fountainsData: GeoJSON.FeatureCollection
+  ) {
     console.log("Data loaded");
-    addMapLayers(data);
-    // Add event listeners for map interactions
+    addMapLayers(racksData);
+    addDrinkingFountainsLayer(fountainsData);
     addMapEventListeners();
   }
 
@@ -144,6 +152,20 @@
         ...rest,
         rackTypology: getTypologyText(typologie),
         rackCount: nombre,
+      },
+    };
+  }
+
+  function mapFountainProperties(feature: Feature): Feature {
+    const { nom_fontaine, adresse, hivernage, date_dernier_controle, ...rest } = feature.properties;
+    return {
+      ...feature,
+      properties: {
+        ...rest,
+        fountainName: nom_fontaine,
+        fountainAddress: adresse,
+        fountainInWinterization: hivernage,
+        fountainLastControlDate: date_dernier_controle,
       },
     };
   }
@@ -270,12 +292,87 @@
     });
   }
 
-  
+  function addDrinkingFountainsLayer(data: GeoJSON.FeatureCollection) {
+    map.loadImage('/assets/images/drinking-fountain.png', (error, image) => {
+      if (error) throw error;
+      
+      if (image) {
+        map.addSource("drinking-fountains", {
+          type: "geojson",
+          data: data,
+        });
+        
+        map.addImage('drinking-fountain', image);
+        
+        // Add white circle layer
+        map.addLayer({
+          id: "drinking-fountains-circle",
+          type: "circle",
+          source: "drinking-fountains",
+          paint: {
+            "circle-radius": 14,
+            "circle-color": "#BEE2FF",
+            "circle-opacity": 0.9,
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#10244A",
+            "circle-stroke-opacity": 0.8,
+          }
+        });
+
+        // Add fountain icon layer
+        map.addLayer({
+          id: "drinking-fountains-icon",
+          type: "symbol",
+          source: "drinking-fountains",
+          layout: {
+            "icon-image": "drinking-fountain",
+            "icon-size": 0.06, // Adjust this value to change the size of the icon
+            "icon-allow-overlap": true
+          }
+        });
+
+        // Add popup for drinking fountains
+        const fountainPopup = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false,
+        });
+
+        // Update event listeners to work with both layers
+        ["drinking-fountains-circle", "drinking-fountains-icon"].forEach(layerId => {
+          map.on("mouseenter", layerId, (e) => {
+            if (e.features && e.features.length > 0) {
+              map.getCanvas().style.cursor = "pointer";
+              const coordinates = e.features[0].geometry.coordinates.slice() as [number, number];
+              const properties = e.features[0].properties;
+
+              const description = `
+                <strong>Drinking Fountain</strong><br>
+                ${properties?.fountainName || "Unnamed"}<br>
+                ${properties?.fountainAddress || "No address available"}<br><br>
+                ${properties?.fountainInWinterization ? "In winterization " : "Not in winterization"}<br>
+                ${properties?.fountainLastControlDate ? `Last control date: ${properties.fountainLastControlDate}` : ""}<br>
+              `;
+
+              fountainPopup.setLngLat(coordinates).setHTML(description).addTo(map);
+            }
+          });
+
+          map.on("mouseleave", layerId, () => {
+            map.getCanvas().style.cursor = "";
+            fountainPopup.remove();
+          });
+        });
+      }
+    });
+  }
 </script>
 
 <svelte:head>
   <title>Boop - Bordeaux Bike Rack Finder</title>
-  <meta name="description" content="Find bike racks in Bordeaux easily with Boop. Locate standard, cargo, and motorbike parking spots across the city." />
+  <meta
+    name="description"
+    content="Find bike racks in Bordeaux easily with Boop. Locate standard, cargo, and motorbike parking spots across the city."
+  />
 </svelte:head>
 
 <nav>
@@ -285,19 +382,16 @@
   </div>
 </nav>
 
-
 <div id="map"></div>
 
 <style>
-
-
   nav {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    background-color: #FAF7F5;
+    background-color: #faf7f5;
     padding: 0.5rem 1rem;
   }
 
@@ -317,7 +411,7 @@
   }
 
   .about-btn {
-    background-color: #FAF7F5;
+    background-color: #faf7f5;
     color: #732232;
     border: none;
     padding: 0.5rem 1rem;

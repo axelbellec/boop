@@ -45,6 +45,8 @@ Here's what's planned for future development:
 - [ ] Fix styling glitches 
 - [ ] Implement a feature to highlight the closest bike racks to the user's location
 - [ ] Enhance the user interface for a more visually appealing experience
+- [ ] Add dataset for [drinking fountains](https://opendata.bordeaux-metropole.fr/explore/dataset/fontaines_a_boire/information/?disjunctive.nom_commune)
+- [ ] Add dataset for mandatory parking zones for [free-floating](https://opendata.bordeaux-metropole.fr/explore/dataset/st_freefloating_s/information/?disjunctive.nom_commune) vehicles
 
 
 ## 🚴‍♂️ Types of Bike Racks
