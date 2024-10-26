@@ -13,23 +13,23 @@
   
   <h2>About Boop</h2>
   
-  <p>Boop (short for <strong>B</strong>ordeaux bike h<strong>oop</strong>s) is a web application designed to help cyclists in Bordeaux easily locate available bike racks. Our mission is to promote cycling and make it more convenient for residents and visitors to securely park their bikes throughout the city.</p>
+  <p>Boop (short for <strong>B</strong>ordeaux bike h<strong>oop</strong>s) is a web application that helps cyclists in Bordeaux locate available bike racks. Leveraging the power of Mapbox GL and the Bordeaux Metropole Open Data API, Boop provides an interactive map interface to visualize various types of bike racks across the city.</p>
 
-  <h2>Our Approach</h2>
+  <h2>How it works</h2>
   <p>We leverage the power of modern web technologies and open data to provide an intuitive, user-friendly experience:</p>
   <ul>
-    <li>Real-time data: We use the Bordeaux Metropole Open Data API to ensure our information is always up-to-date.</li>
-    <li>Interactive mapping: With Mapbox GL, we offer a smooth, responsive map interface that works great on both desktop and mobile devices.</li>
-    <li>Efficient development: Built with SvelteKit and TypeScript, Boop is fast, lightweight, and easy to maintain.</li>
+    <li>Real-time data: we use the Bordeaux Metropole Open Data API to ensure our information is always up-to-date.</li>
+    <li>Interactive mapping: with Mapbox GL, we offer a smooth, responsive map interface that works great on both desktop and mobile devices.</li>
+    <li>Efficient development: built with SvelteKit and TypeScript, Boop is fast, lightweight, and easy to maintain.</li>
   </ul>
 
   <h2>Features</h2>
   <ul>
     <li>Visualize different types of bike racks (standard, cargo, and motorbike)</li>
     <li>See the capacity of each rack location</li>
-    <li>Cluster view for areas with many racks</li>
     <li>Geolocation support to find racks near you</li>
     <li>Responsive design for seamless use on any device</li>
+    <li>Public toilets and drinking fountains information</li>
   </ul>
 
   <h2>Why Boop?</h2>
@@ -41,7 +41,7 @@
     <li>Supporting the city's efforts to promote sustainable transportation</li>
   </ul>
 
-  <p>We're constantly working to improve Boop and welcome feedback from our users. Happy cycling!</p>
+  <p>We're constantly working to improve Boop and welcome feedback from our users. Happy cycling! 🚲</p>
   
   <a href="https://github.com/axelbellec/boop" target="_blank" rel="noopener noreferrer">
     <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" width="32" height="32" />

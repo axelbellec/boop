@@ -54,7 +54,7 @@ export function createRackPopupDescription(
 ): string {
   return `
     <strong>Rack Type</strong><br> 
-    ${properties.rackTypology}<br><br>
+    ${properties.rackTypology}<br>
     <strong>Racks Available</strong><br>
     ${properties.rackCount || "N/A"}
   `;
@@ -63,11 +63,11 @@ export function createRackPopupDescription(
 export function createFountainPopupDescription(properties: any): string {
   return `
     <strong>Fountain Name</strong><br>
-    ${properties.fountainName || "N/A"}<br><br>
+    ${properties.fountainName || "N/A"}<br>
     <strong>Address</strong><br>
-    ${properties.fountainAddress || "N/A"}<br><br>
+    ${properties.fountainAddress || "N/A"}<br>
     <strong>Winterization</strong><br>
-    ${properties.fountainInWinterization ? "Yes" : "No"}<br><br>
+    ${properties.fountainInWinterization ? "Yes" : "No"}<br>
     <strong>Last Control Date</strong><br>
     ${properties.fountainLastControlDate || "N/A"}
   `;
@@ -76,9 +76,9 @@ export function createFountainPopupDescription(properties: any): string {
 export function createPublicToiletPopupDescription(properties: any): string {
   return `
     <strong>Toilet Type</strong><br>
-    ${properties.toiletType || "N/A"}<br><br>
+    ${properties.toiletType || "N/A"}<br>
     <strong>Address</strong><br>
-    ${properties.toiletAddress || "N/A"}<br><br>
+    ${properties.toiletAddress || "N/A"}<br>
     <strong>Accessible for Disabled</strong><br>
     ${properties.accessibleForDisabled ? "Yes" : "No"}
   `;

@@ -30,7 +30,7 @@ function addRacksLayer(map: mapboxgl.Map, data: GeoJSON.FeatureCollection) {
 
         // Add circle layer for bike racks
         map.addLayer({
-            id: "bikes-circle",
+            id: "racks-circle",
             type: "circle",
             source: "racks",
             paint: {
@@ -41,7 +41,7 @@ function addRacksLayer(map: mapboxgl.Map, data: GeoJSON.FeatureCollection) {
 
         // Add the symbol layer for bike racks
         map.addLayer({
-            id: "bikes",
+            id: "racks",
             type: "symbol",
             source: "racks",
             layout: {
