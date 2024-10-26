@@ -43,6 +43,17 @@
     showLayerControl = false;
   }
 
+  function handleOverlayInteraction(event: MouseEvent | KeyboardEvent) {
+    if (
+      event.type === 'click' ||
+      (event instanceof KeyboardEvent && event.key === 'Escape')
+    ) {
+      if (event.target === event.currentTarget) {
+        closeLayerControl();
+      }
+    }
+  }
+
   onMount(() => {
     map = initializeMap();
 
@@ -60,7 +71,14 @@
 <div id="map"></div>
 <Navigation on:toggleLayerControl={toggleLayerControl} />
 {#if showLayerControl}
-  <div class="layer-control-overlay">
+  <div
+    class="layer-control-overlay"
+    on:click={handleOverlayInteraction}
+    on:keydown={handleOverlayInteraction}
+    role="dialog"
+    aria-label="Layer Control"
+    tabindex="-1"
+  >
     <LayerControl {layers} on:toggleLayer={toggleLayerVisibility} on:close={closeLayerControl} />
   </div>
 {/if}
@@ -80,7 +98,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(255, 253, 253, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     z-index: 1001;
   }
 

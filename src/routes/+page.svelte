@@ -30,6 +30,7 @@
     name="description"
     content="Find bike racks in Bordeaux easily with Boop. Locate standard, cargo, and motorbike parking spots across the city."
   />
+  <link href="https://fonts.googleapis.com/css?family=Gelasio" rel="stylesheet">
 </svelte:head>
 
 <Navigation />

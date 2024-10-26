@@ -8,6 +8,7 @@
 
 <div class="about-container">
   <nav>
+    
     <button class="back-btn" on:click={handleBackClick}>⬅ Back to Map</button>
   </nav>
   
@@ -61,13 +62,15 @@
   }
 
   .back-btn {
-    background-color: #732232;
-    color: white;
+    background-color: #faf7f5;
+    color: #732232;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     cursor: pointer;
     font-size: 1rem;
+    font-family: 'Gelasio', Arial, sans-serif;
+    font-weight: bold;
   }
 
   h2 {

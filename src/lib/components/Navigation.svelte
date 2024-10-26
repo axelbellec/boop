@@ -15,16 +15,12 @@
 
 <nav>
   <div class="nav-content">
-    <a href="/" class="logo">Boop</a>
+    <a href="/" class="logo"><b>boop</b>.beta</a>
     <div class="nav-buttons">
-      <button class="icon-btn" on:click={handleLayerClick} aria-label="Toggle Layer Control">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-          <polyline points="2 17 12 22 22 17"></polyline>
-          <polyline points="2 12 12 17 22 12"></polyline>
-        </svg>
+      <button class="nav-btn" on:click={handleLayerClick} >
+        Layers
       </button>
-      <button class="about-btn" on:click={handleAboutClick}>About</button>
+      <button class="nav-btn" on:click={handleAboutClick}>About</button>
     </div>
   </div>
 </nav>
@@ -32,6 +28,7 @@
 <style>
   nav {
     position: absolute;
+    font-family: 'Gelasio', Arial, sans-serif;
     top: 0;
     left: 0;
     right: 0;
@@ -50,7 +47,7 @@
 
   .logo {
     font-size: 1.5rem;
-    font-weight: bold;
+    font-style: normal;
     color: #732232;
     text-decoration: none;
   }
@@ -69,7 +66,7 @@
     color: #732232;
   }
 
-  .about-btn {
+  .nav-btn {
     background-color: #faf7f5;
     color: #732232;
     border: none;
@@ -77,6 +74,7 @@
     border-radius: 0.25rem;
     cursor: pointer;
     font-size: 1rem;
+    font-family: 'Gelasio', Arial, sans-serif;
     font-weight: bold;
   }
 </style>
