@@ -1,6 +1,4 @@
 export type FeatureProperties = {
-  typologie: string;
-  nombre: number;
   [key: string]: any;
 };
 

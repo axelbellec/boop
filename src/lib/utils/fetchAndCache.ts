@@ -1,3 +1,5 @@
+import logger from './logger';
+
 interface Cache {
   data: any | null;
   lastFetch: Date | null;
@@ -12,21 +14,23 @@ const cacheStore: CacheStore = {};
 export async function fetchAndCache(url: string, cacheKey: string) {
   const now = new Date();
   
-  // Check if cache is valid (less than 24 hours old)
-  if (cacheStore[cacheKey]?.data && cacheStore[cacheKey]?.lastFetch && 
-      (now.getTime() - cacheStore[cacheKey].lastFetch!.getTime() < 24 * 60 * 60 * 1000)) {
-    console.log(`Returning cached data for ${cacheKey}`);
-    return cacheStore[cacheKey].data;
+  const cache = cacheStore[cacheKey];
+  const cacheAge = cache?.lastFetch ? now.getTime() - cache.lastFetch.getTime() : Infinity;
+  const cacheIsValid = cacheAge < 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  if (cache?.data && cacheIsValid) {
+    logger.info(`Returning cached data for ${cacheKey}`);
+    return cache.data;
   }
 
-  console.log(`Fetching fresh data for ${cacheKey}`);
+  logger.info(`Fetching fresh data for ${cacheKey}`);
   const response = await fetch(url, {
     headers: {
       'Content-Type': 'application/json'
     }
   });
   if (!response.ok) {
-    console.error({ response });
+    logger.error('Failed to fetch data', { cacheKey, statusText: response.statusText });
     throw new Error(`Failed to fetch ${cacheKey} data, response: ${response.statusText}`);
   }
   const data = await response.json();

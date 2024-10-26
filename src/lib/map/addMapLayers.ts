@@ -17,43 +17,6 @@ function addRacksLayer(map: mapboxgl.Map, data: GeoJSON.FeatureCollection) {
     map.addSource("racks", {
         type: "geojson",
         data: data,
-        cluster: true,
-        clusterMaxZoom: 16,
-        clusterRadius: 50,
-    });
-
-    map.addLayer({
-        id: "clusters",
-        type: "circle",
-        source: "racks",
-        filter: ["has", "point_count"],
-        paint: {
-            "circle-color": [
-                "step",
-                ["get", "point_count"],
-                "#993D51",
-                100,
-                "#732232",
-                750,
-                "#4A0E18",
-            ],
-            "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
-        },
-    });
-
-    map.addLayer({
-        id: "cluster-count",
-        type: "symbol",
-        source: "racks",
-        filter: ["has", "point_count"],
-        layout: {
-            "text-field": "{point_count_abbreviated}",
-            "text-font": ["Rubik Medium", "Arial Unicode MS Bold"],
-            "text-size": 12,
-        },
-        paint: {
-            "text-color": "#FAF7F5", // Set text color to white
-        },
     });
 
     // Load the bike image
@@ -65,54 +28,28 @@ function addRacksLayer(map: mapboxgl.Map, data: GeoJSON.FeatureCollection) {
             map.addImage('bike', image);
         }
 
-        // Modify the unclustered-point layer
-        // map.addLayer({
-        //     id: "unclustered-point",
-        //     type: "symbol",
-        //     source: "racks",
-        //     filter: ["!", ["has", "point_count"]],
-        //     layout: {
-        //         "icon-image": "bike",
-        //         "icon-size": 0.06, // Adjust this value to change the size of the icon
-        //         "icon-allow-overlap": true,
-        //     },
-        //     paint: {
-        //         "icon-color": [
-        //             "match",
-        //             ["get", "rackTypology"],
-        //             "Motorbike", "#FFC4DB",
-        //             "Bike", "#993D51",
-        //             "Bike + Cargo", "#BF6076",
-        //             /* other */ "#ccc",
-        //         ],
-        //     },
-        // });
-
-
+        // Add circle layer for bike racks
         map.addLayer({
             id: "bikes-circle",
             type: "circle",
             source: "racks",
-            filter: ["!", ["has", "point_count"]],
             paint: {
                 "circle-color": "#FFE8C2",
                 "circle-radius": 16,
             },
         });
 
-        // Add the symbol layer
+        // Add the symbol layer for bike racks
         map.addLayer({
             id: "bikes",
             type: "symbol",
             source: "racks",
-            filter: ["!", ["has", "point_count"]],
             layout: {
                 "icon-image": "bike",
                 "icon-size": 0.06,
                 "icon-allow-overlap": true,
             },
         });
-
     });
 }
 

@@ -50,14 +50,13 @@ export function mapPublicToiletProperties(feature: Feature): Feature {
 }
 
 export function createRackPopupDescription(
-  rackTypology: string,
-  rackCount: number
+  properties: any
 ): string {
   return `
     <strong>Rack Type</strong><br> 
-    ${rackTypology}<br><br>
+    ${properties.rackTypology}<br><br>
     <strong>Racks Available</strong><br>
-    ${rackCount || "N/A"}
+    ${properties.rackCount || "N/A"}
   `;
 }
 

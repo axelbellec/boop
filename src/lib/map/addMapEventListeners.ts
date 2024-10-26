@@ -1,8 +1,30 @@
 import mapboxgl from "mapbox-gl";
-import type { MapMouseEvent, EventData } from "mapbox-gl";
+import type { MapMouseEvent } from "mapbox-gl";
 import { createRackPopupDescription, createFountainPopupDescription, createPublicToiletPopupDescription } from "$lib/utils";
 
 export function addMapEventListeners(map: mapboxgl.Map) {
+    // Create a popup, but don't add it to the map yet.
+    const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        maxWidth: "300px",
+    });
+
+    // Add event listeners for bike racks
+    map.on("mouseenter", "bikes-circle", (e) => {
+        map.getCanvas().style.cursor = "pointer";
+        handlePointInteraction(e, map, popup, "bikes", createRackPopupDescription);
+    });
+
+    map.on("mouseleave", "bikes-circle", () => {
+        map.getCanvas().style.cursor = "";
+        popup.remove();
+    });
+
+    map.on("click", "bikes-circle", (e) => {
+        handlePointInteraction(e, map, popup, "bikes", createRackPopupDescription);
+    });
+
     // Add click event for clusters
     map.on("click", "clusters", (e) => handleClusterClick(e, map));
 
@@ -14,23 +36,6 @@ export function addMapEventListeners(map: mapboxgl.Map) {
     // Change cursor back when not hovering over clusters
     map.on("mouseleave", "clusters", () => {
         map.getCanvas().style.cursor = "";
-    });
-
-    // Create a popup, but don't add it to the map yet.
-    const popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-        maxWidth: "300px",
-    });
-
-    map.on("mouseenter", "unclustered-point-circle", (e) => {
-        map.getCanvas().style.cursor = "pointer";
-        handlePointInteraction(e, map, popup, "unclustered-point", createRackPopupDescription);
-    });
-
-    map.on("mouseleave", "unclustered-point-circle", () => {
-        map.getCanvas().style.cursor = "";
-        popup.remove();
     });
 
     // Add touch event for mobile devices
@@ -69,7 +74,7 @@ export function addMapEventListeners(map: mapboxgl.Map) {
     });
 }
 
-function handleClusterClick(e: MapMouseEvent & EventData, map: mapboxgl.Map) {
+function handleClusterClick(e: MapMouseEvent, map: mapboxgl.Map) {
     const features = map.queryRenderedFeatures(e.point, {
         layers: ["clusters"],
     }) as mapboxgl.GeoJSONFeature[];
@@ -91,7 +96,7 @@ function handleClusterClick(e: MapMouseEvent & EventData, map: mapboxgl.Map) {
 
 
 function handleUnclusteredPointInteraction(
-    e: MapMouseEvent & EventData,
+    e: MapMouseEvent,
     map: mapboxgl.Map,
     popup: mapboxgl.Popup
 ) {
@@ -111,7 +116,7 @@ function handleUnclusteredPointInteraction(
 }
 
 function handlePointInteraction(
-    e: MapMouseEvent & EventData,
+    e: MapMouseEvent,
     map: mapboxgl.Map,
     popup: mapboxgl.Popup,
     sourceId: string,

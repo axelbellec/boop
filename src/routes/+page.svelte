@@ -2,28 +2,25 @@
   import { onMount } from "svelte";
   import Map from "$lib/components/Map.svelte";
   import Navigation from "$lib/components/Navigation.svelte";
-  
   import { mapRackProperties, mapFountainProperties, mapPublicToiletProperties } from "$lib/utils";
 
   let racksData: GeoJSON.FeatureCollection;
   let fountainsData: GeoJSON.FeatureCollection;
   let publicToiletsData: GeoJSON.FeatureCollection;
 
+  const fetchAndMapData = async (url: string, mapFunction: (feature: any) => any) => {
+    const response = await fetch(url);
+    const data: GeoJSON.FeatureCollection = await response.json();
+    data.features = data.features.map(mapFunction);
+    return data;
+  };
+
   onMount(async () => {
-    const [racksResponse, fountainsResponse, publicToiletsResponse] = await Promise.all([
-      fetch("/api/racks"),
-      fetch("/api/drinking-fountains"),
-      fetch("/api/public-toilets"),
+    [racksData, fountainsData, publicToiletsData] = await Promise.all([
+      fetchAndMapData("/api/racks", mapRackProperties),
+      fetchAndMapData("/api/drinking-fountains", mapFountainProperties),
+      fetchAndMapData("/api/public-toilets", mapPublicToiletProperties),
     ]);
-
-    racksData = await racksResponse.json();
-    racksData.features = racksData.features.map(mapRackProperties);
-
-    fountainsData = await fountainsResponse.json();
-    fountainsData.features = fountainsData.features.map(mapFountainProperties);
-
-    publicToiletsData = await publicToiletsResponse.json();
-    publicToiletsData.features = publicToiletsData.features.map(mapPublicToiletProperties);
   });
 </script>
 
