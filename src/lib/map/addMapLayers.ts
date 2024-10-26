@@ -11,6 +11,12 @@ export function addMapLayers(
     addRacksLayer(map, racksData);
     addDrinkingFountainsLayer(map, fountainsData);
     addPublicToiletsLayer(map, publicToiletsData);
+
+    // Set initial visibility for all layers
+    ["racks", "drinking-fountains", "public-toilets"].forEach(layerId => {
+        map.setLayoutProperty(`${layerId}-circle`, "visibility", "visible");
+        map.setLayoutProperty(layerId, "visibility", "visible");
+    });
 }
 
 function addRacksLayer(map: mapboxgl.Map, data: GeoJSON.FeatureCollection) {
