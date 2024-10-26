@@ -6,7 +6,7 @@ export function initializeMap(): mapboxgl.Map {
   const map = new mapboxgl.Map({
     container: "map",
     center: [-0.5792, 44.8378],
-    zoom: 13,
+    zoom: 16,
   });
 
   // Add geolocate control
