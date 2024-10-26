@@ -8,8 +8,9 @@
 
 <div class="about-container">
   <nav>
-    
-    <button class="back-btn" on:click={handleBackClick}>⬅ Back to Map</button>
+    <div class="nav-content">
+      <button class="nav-btn" on:click={handleBackClick}>⬅︎ Back to Map</button>
+    </div>
   </nav>
   
   <h2>About Boop</h2>
@@ -44,8 +45,9 @@
 
   <p>We're constantly working to improve Boop and welcome feedback from our users. Happy cycling! 🚲</p>
   
-  <a href="https://github.com/axelbellec/boop" target="_blank" rel="noopener noreferrer">
+  <a href="https://github.com/axelbellec/boop" target="_blank" rel="noopener noreferrer" class="github-link">
     <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" width="32" height="32" />
+    View on GitHub
   </a>
 </div>
 
@@ -55,13 +57,20 @@
     margin: 0 auto;
     padding: 2rem;
     line-height: 1.6;
+    font-family: 'Gelasio', Arial, sans-serif;
   }
 
   nav {
     margin-bottom: 2rem;
   }
 
-  .back-btn {
+  .nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-btn {
     background-color: #faf7f5;
     color: #732232;
     border: none;
@@ -69,8 +78,12 @@
     border-radius: 0.25rem;
     cursor: pointer;
     font-size: 1rem;
-    font-family: 'Gelasio', Arial, sans-serif;
     font-weight: bold;
+  }
+
+  .nav-btn:hover {
+    background-color: #732232;
+    color: #faf7f5;
   }
 
   h2 {
@@ -79,5 +92,18 @@
 
   ul {
     padding-left: 1.5rem;
+  }
+
+  .github-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: #732232;
+    /* font-weight: bold; */
+    margin-top: 2rem;
+  }
+
+  .github-link img {
+    margin-right: 0.5rem;
   }
 </style>

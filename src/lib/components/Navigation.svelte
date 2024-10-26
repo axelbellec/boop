@@ -17,9 +17,7 @@
   <div class="nav-content">
     <a href="/" class="logo"><b>boop</b>.beta</a>
     <div class="nav-buttons">
-      <button class="nav-btn" on:click={handleLayerClick} >
-        Layers
-      </button>
+      <button class="nav-btn" on:click={handleLayerClick}>Layers</button>
       <button class="nav-btn" on:click={handleAboutClick}>About</button>
     </div>
   </div>
@@ -28,7 +26,6 @@
 <style>
   nav {
     position: absolute;
-    font-family: 'Gelasio', Arial, sans-serif;
     top: 0;
     left: 0;
     right: 0;
@@ -47,23 +44,15 @@
 
   .logo {
     font-size: 1.5rem;
-    font-style: normal;
+    font-weight: bold;
     color: #732232;
     text-decoration: none;
+    font-family: 'Gelasio', Arial, sans-serif;
   }
 
   .nav-buttons {
     display: flex;
     align-items: center;
-  }
-
-  .icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-    margin-right: 1rem;
-    color: #732232;
   }
 
   .nav-btn {
@@ -76,5 +65,11 @@
     font-size: 1rem;
     font-family: 'Gelasio', Arial, sans-serif;
     font-weight: bold;
+    margin-left: 0.5rem;
+  }
+
+  .nav-btn:hover {
+    background-color: #732232;
+    color: #faf7f5;
   }
 </style>
