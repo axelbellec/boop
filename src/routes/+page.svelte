@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Map from "$lib/components/Map.svelte";
-  import Navigation from "$lib/components/Navigation.svelte";
   import { mapRackProperties, mapFountainProperties, mapPublicToiletProperties } from "$lib/utils";
 
   let racksData: GeoJSON.FeatureCollection;
@@ -30,10 +29,7 @@
     name="description"
     content="Find bike racks in Bordeaux easily with Boop. Locate standard, cargo, and motorbike parking spots across the city."
   />
-  <link href="https://fonts.googleapis.com/css?family=Gelasio" rel="stylesheet">
 </svelte:head>
-
-<Navigation />
 
 {#if racksData && fountainsData && publicToiletsData}
   <Map {racksData} {fountainsData} {publicToiletsData} />

@@ -7,12 +7,8 @@
 </script>
 
 <div class="about-container">
-  <nav>
-    <div class="nav-content">
-      <button class="nav-btn" on:click={handleBackClick}>⬅︎ Back to Map</button>
-    </div>
-  </nav>
   
+  <br/>
   <h2>About Boop</h2>
   
   <p>Boop (short for <strong>B</strong>ordeaux bike h<strong>oop</strong>s) is a web application that helps cyclists in Bordeaux locate available bike racks. Leveraging the power of Mapbox GL and the Bordeaux Metropole Open Data API, Boop provides an interactive map interface to visualize various types of bike racks across the city.</p>
@@ -58,32 +54,6 @@
     padding: 2rem;
     line-height: 1.6;
     font-family: 'Gelasio', Arial, sans-serif;
-  }
-
-  nav {
-    margin-bottom: 2rem;
-  }
-
-  .nav-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .nav-btn {
-    background-color: #faf7f5;
-    color: #732232;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-  }
-
-  .nav-btn:hover {
-    background-color: #732232;
-    color: #faf7f5;
   }
 
   h2 {
