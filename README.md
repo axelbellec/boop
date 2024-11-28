@@ -2,6 +2,8 @@
 
 <img src="https://boop-bay.vercel.app/assets/images/twitter-preview.png" alt="Boop Twitter Preview" style="width: 20%;">
 
+> *A few hours' project to help me track down bike racks when venturing into new areas of Bordeaux*
+
 Boop (short for **B**ordeaux bike h**oop**s) is a sleek web application that helps cyclists in Bordeaux locate available bike racks. Leveraging the power of Mapbox GL and the Bordeaux Metropole Open Data API, Boop provides an interactive map interface to visualize various types of bike racks across the city.
 
 ## 🚀 Live Demo
